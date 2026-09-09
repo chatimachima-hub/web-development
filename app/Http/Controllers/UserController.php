@@ -2,19 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
     public function index()
     {
-        return view("user.index");
+        return view('user.index');
     }
 
     public function create()
     {
-        return view("user.create");
+        return view('user.create');
     }
+
     public function store(Request $request)
     {
         $validasi = $request->validate([
@@ -23,11 +27,11 @@ class UserController extends Controller
                 'required',
                 'string',
                 'email',
-                \Illuminate\Validation\Rule::unique(\App\Models\User::class, 'email'),
-                'max:255'
+                Rule::unique(User::class, 'email'),
+                'max:255',
             ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'password_confirmation' => ['required', 'string', 'min:8']
+            'password_confirmation' => ['required', 'string', 'min:8'],
         ], [
             'name.required' => 'Nama wajib diisi.',
             'name.string' => 'Nama harus berupa teks.',
@@ -49,20 +53,22 @@ class UserController extends Controller
             'password_confirmation.min' => 'Konfirmasi password minimal 8 karakter.',
         ]);
 
-        \App\Models\User::create([
+        User::create([
             'name' => $validasi['name'],
             'email' => $validasi['email'],
-            'password' => \Illuminate\Support\Facades\Hash::make($validasi['password']),
+            'password' => Hash::make($validasi['password']),
 
         ]);
+
         return redirect()->route('user')->with('success', 'user berhasil di tambahkan');
     }
 
-    public function edit(\App\Models\User $user)
+    public function edit(User $user)
     {
-        return view("user.edit", compact("user"));
+        return view('user.edit', compact('user'));
     }
-    public function update(request $request, \App\Models\User $user)
+
+    public function update(Request $request, User $user)
     {
         $validasi = $request->validate(
             [
@@ -76,7 +82,7 @@ class UserController extends Controller
                     'required',
                     'email',
                     'max:255',
-                    \Illuminate\Validation\Rule::unique('users', 'email')
+                    Rule::unique('users', 'email')
                         ->ignore($user),
                 ],
                 'password' => [
@@ -92,18 +98,21 @@ class UserController extends Controller
             ],
         );
         $data = [
-            'name'=> $validasi['name'],
-            'email'=> $validasi['email'],
+            'name' => $validasi['name'],
+            'email' => $validasi['email'],
         ];
-        if(!empty($validasi['password'])){
-            $data['password'] = \Illuminate\Support\Facades\Hash::make($validasi['password']);
+        if (! empty($validasi['password'])) {
+            $data['password'] = Hash::make($validasi['password']);
         }
         $user->update($data);
-        return redirect()->route('user')->with('success','user berhasil di perbarui');
+
+        return redirect()->route('user')->with('success', 'user berhasil di perbarui');
     }
-    public function destroy(\App\Models\User $user)
+
+    public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('user')->with('success','User berhasil dihapus');
+
+        return redirect()->route('user')->with('success', 'User berhasil dihapus');
     }
 }
