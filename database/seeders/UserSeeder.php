@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class UserSeeder extends Seeder
 {
@@ -16,7 +17,7 @@ class UserSeeder extends Seeder
         $user->name = 'admin';
         $user->email = 'admin@example.com';
         $user->password = bcrypt('password');
-        $user->email_verified_at = now();
+        $user->email_verified_at = Carbon::now();
         $user->save();
     }
 }

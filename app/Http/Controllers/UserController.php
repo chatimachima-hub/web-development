@@ -3,23 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         return view('user.index');
     }
 
-    public function create()
+    public function create(): View
     {
         return view('user.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validasi = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -63,12 +65,12 @@ class UserController extends Controller
         return redirect()->route('user')->with('success', 'user berhasil di tambahkan');
     }
 
-    public function edit(User $user)
+    public function edit(User $user): View
     {
         return view('user.edit', compact('user'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user): RedirectResponse
     {
         $validasi = $request->validate(
             [
@@ -109,7 +111,7 @@ class UserController extends Controller
         return redirect()->route('user')->with('success', 'user berhasil di perbarui');
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user): RedirectResponse
     {
         $user->delete();
 
